@@ -61,12 +61,12 @@ export const userRegister = async (req, res) => {
 
 export const verify = async (req, res) => {
   try {
-    const { token, userId } = req.query;
+    const { token, userId: id } = req.query;
 
     const user = await prisma.user.findFirst({
       where: {
-        token: token,
-        id: userId,
+        token,
+        id,
       },
     });
 
@@ -78,7 +78,7 @@ export const verify = async (req, res) => {
 
     await prisma.user.update({
       where: {
-        id: userId,
+        id,
       },
       data: {
         isEmailConfirmed: true,
@@ -90,5 +90,15 @@ export const verify = async (req, res) => {
   } catch (error) {
     console.log("error at verify user ", error);
     res.status(400).send(err.message);
+  }
+};
+export const read = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany();
+
+    res.status(200).send({ status: true, message: users });
+  } catch (error) {
+    res.status(500).send({ status: 500, message: error.message });
+    console.log(error);
   }
 };

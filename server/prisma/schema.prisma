@@ -16,8 +16,8 @@ model User {
   username String @unique 
   password String @unique
   isEmailConfirmed Boolean @default(false)
-  token String 
-  expireDate DateTime
+  token String?
+  expireDate DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
