@@ -1,9 +1,13 @@
 import prisma from "../../prisma/client.js";
 import userSchema from "../utils/schema/userSchema.js";
-import { hashedPassword } from "../utils/schema/passwordUtils.js";
+import {
+  comparePassword,
+  hashedPassword,
+} from "../utils/schema/passwordUtils.js";
 import { generateVerificationToken } from "../utils/generations.js";
-import { WEB_URL } from "../config/initial.config.js";
+import { JWT_SECRET_KEY, WEB_URL } from "../config/initial.config.js";
 import sendVerificationEmail from "../utils/emails/verificationEmail.js";
+import jwt from "jsonwebtoken";
 
 export const userRegister = async (req, res) => {
   try {
@@ -61,12 +65,12 @@ export const userRegister = async (req, res) => {
 
 export const verify = async (req, res) => {
   try {
-    const { token, userId } = req.query;
+    const { token, userId: id } = req.query;
 
     const user = await prisma.user.findFirst({
       where: {
-        token: token,
-        id: userId,
+        token,
+        id,
       },
     });
 
@@ -78,7 +82,7 @@ export const verify = async (req, res) => {
 
     await prisma.user.update({
       where: {
-        id: userId,
+        id,
       },
       data: {
         isEmailConfirmed: true,
@@ -90,5 +94,50 @@ export const verify = async (req, res) => {
   } catch (error) {
     console.log("error at verify user ", error);
     res.status(400).send(err.message);
+  }
+};
+export const read = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany();
+
+    res.status(200).send({ status: true, message: users });
+  } catch (error) {
+    res.status(500).send({ status: 500, message: error.message });
+    console.log(error);
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { username: username?.toLowerCase() },
+          { email: email?.toLowerCase() },
+        ],
+      },
+    });
+    console.log(user);
+    if (!user?.isEmailConfirmed)
+      return res.status(404).send("First confirm your email ");
+
+    if (!user || !(await comparePassword(password, user.password)))
+      return res.status(404).send("username or password is incorrect");
+
+    const token = jwt.sign({ id: user.id }, JWT_SECRET_KEY);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: false,
+    });
+
+    user.password = undefined;
+
+    res.status(200).send({ status: true, message: user });
+  } catch (error) {
+    console.log("error at login ", error);
   }
 };
