@@ -2,11 +2,11 @@ import multer, { memoryStorage } from "multer";
 
 const storage = memoryStorage();
 
-const upload = multer({
+export const uploadImage = multer({
   storage,
   limits: {
     fileSize: 5 * 1024 * 1024,
   },
 });
 
-export default upload;
+export const multerVideo = multer({ dest: "uploads/" });
