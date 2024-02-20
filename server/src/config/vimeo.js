@@ -1,4 +1,4 @@
-import { Vimeo } from "vimeo";
+import { Vimeo } from "@vimeo/vimeo";
 import {
   vimeo_Access_Token,
   vimeo_Client_Id,

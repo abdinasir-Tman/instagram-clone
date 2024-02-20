@@ -41,13 +41,11 @@ export const registerStatus = async (req, res) => {
   try {
     let video;
     if (req.file) {
-      console.log("file system ", req.file);
-      video = uploadVideo(req.file.originalname);
+      video = uploadVideo(req.file.path);
 
-      console.log(video);
+      console.log("this is the video ", video);
+      res.status(201).send({ status: true, message: video });
     }
-
-    res.status(201).send({ status: true, message: video });
   } catch (error) {
     console.log("error at register user ", error);
     res.status(500).send(error.message);

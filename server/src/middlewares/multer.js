@@ -9,4 +9,4 @@ export const uploadImage = multer({
   },
 });
 
-export const multerVideo = multer({ storage });
+export const multerVideo = multer({ dest: "uploads/" });

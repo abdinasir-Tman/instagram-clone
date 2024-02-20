@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.9.1",
+    "@vimeo/vimeo": "^3.0.2",
     "bcrypt": "^5.1.1",
     "chalk": "^5.3.0",
     "cloudinary": "^1.41.3",
@@ -28,8 +29,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.5",
-    "validator": "^13.11.0",
-    "vimeo": "^2.3.1"
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.1",
